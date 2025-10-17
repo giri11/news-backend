@@ -1,11 +1,13 @@
 package com.newsapp.controller;
 
+import com.newsapp.dto.CategoryDTO;
 import com.newsapp.dto.PagingResponseDTO;
 import com.newsapp.model.Article;
 import com.newsapp.model.Category;
 import com.newsapp.model.Role;
 import com.newsapp.model.User;
 import com.newsapp.repository.ArticleRepository;
+import com.newsapp.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,10 +25,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/news")
 @RequiredArgsConstructor
@@ -35,6 +39,9 @@ public class NewsController {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+    @Autowired
+    private NewsService newsService;
 
     @Operation(
             summary = "Get all news",
@@ -142,6 +149,24 @@ public class NewsController {
                 "\n 3Why Shares Are Soaring on the OpenAI News Today");
 
         return ResponseEntity.ok(article);
+    }
+
+    @Operation(
+            summary = "Get Categories",
+            description = "Retrieve Categories"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved Categories"
+            )
+    })
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryDTO>> getCategories() {
+
+        log.debug("masuk sini");
+        List<CategoryDTO> categories = newsService.getAllActiveCategories();
+        return ResponseEntity.ok(categories);
     }
 
 }

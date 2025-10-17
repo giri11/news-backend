@@ -62,4 +62,6 @@ logging:
     max-history: 30
     total-size-cap: 1GB
 
-key: 1e3b2ac4875f4cab9f90ab0ffabec1dc
+news:
+  api:
+    key: 1e3b2ac4875f4cab9f90ab0ffabec1dc

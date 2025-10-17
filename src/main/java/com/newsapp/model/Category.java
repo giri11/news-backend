@@ -29,6 +29,9 @@ public class Category {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @Transient
+    private String slug;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;

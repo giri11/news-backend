@@ -25,7 +25,7 @@ class NewsBackendApplicationTests {
 	@Test
 	void contextLoads() {
 		// This test just checks if Spring context loads
-		
+
 	}
 
 }
