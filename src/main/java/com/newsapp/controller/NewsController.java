@@ -5,7 +5,6 @@ import com.newsapp.dto.CategoryDTO;
 import com.newsapp.dto.PagingResponseDTO;
 import com.newsapp.model.Article;
 import com.newsapp.model.Category;
-import com.newsapp.model.Role;
 import com.newsapp.model.User;
 import com.newsapp.repository.ArticleRepository;
 import com.newsapp.service.NewsService;
@@ -27,12 +26,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/news")
 @RequiredArgsConstructor
