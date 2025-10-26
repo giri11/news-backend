@@ -1,5 +1,6 @@
 package com.newsapp.controller;
 
+import com.newsapp.dto.ArticleDTO;
 import com.newsapp.dto.CategoryDTO;
 import com.newsapp.dto.PagingResponseDTO;
 import com.newsapp.model.Article;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,12 +82,19 @@ public class NewsController {
         try{
             Pageable pageable = PageRequest.of(0, pageSize, Sort.by("a.createdAt").descending());
             Page<Article> page = articleRepository.findAll(pageable, category);
+            List<ArticleDTO> contents = new ArrayList<>();
+            for(Article article : page.getContent()){
+                ArticleDTO dto = new ArticleDTO();
+                BeanUtils.copyProperties(article, dto);
+                dto.setAuthor(article.getCreatedBy().getName());
+                contents.add(dto);
+            }
 
             PagingResponseDTO respDTO = new PagingResponseDTO();
             respDTO.setStatus(HttpStatus.OK.name());
             respDTO.setTotalResults(page.getTotalElements());
             respDTO.setTotalPages(page.getTotalPages());
-            respDTO.setData(page.getContent());
+            respDTO.setData(contents);
 
             return ResponseEntity.ok(respDTO);
         } catch (Exception e) {
@@ -135,7 +144,6 @@ public class NewsController {
         User userBarron = new User();
         userBarron.setId(1L);
         userBarron.setName("Barron");
-        userBarron.setRole(Role.USER);
 
         Article article = new Article();
         article.setId(1L);

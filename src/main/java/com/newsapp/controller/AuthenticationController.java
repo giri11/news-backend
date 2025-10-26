@@ -1,9 +1,7 @@
 package com.newsapp.controller;
 
-import com.newsapp.dto.AuthenticationRequest;
-import com.newsapp.dto.AuthenticationResponse;
-import com.newsapp.dto.RegisterRequest;
-import com.newsapp.dto.RegisterResponse;
+import com.newsapp.dto.*;
+import com.newsapp.service.AuthService;
 import com.newsapp.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,9 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication", description = "Authentication management APIs")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+//    private final AuthenticationService authenticationService;
+    private final AuthService authService;
 
-    @Operation(
+    /*@Operation(
             summary = "Register a new user",
             description = "Register a new user account with email and password"
     )
@@ -47,7 +46,7 @@ public class AuthenticationController {
             @Valid @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(authenticationService.register(request));
-    }
+    }*/
 
     @Operation(
             summary = "Login user",
@@ -68,9 +67,7 @@ public class AuthenticationController {
             )
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @Valid @RequestBody AuthenticationRequest request
-    ) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
