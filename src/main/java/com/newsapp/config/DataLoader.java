@@ -90,6 +90,11 @@ public class DataLoader implements CommandLineRunner {
 //
 //        userRepository.saveAll(Arrays.asList(admin, user));
 
+//        Menu categories = createMenu("Categories", "FolderOpen", "/categories", 4, null);
+//        Menu articles = createMenu("Articles", "FileText", "/articles", 5, null);
+//
+//        menuRepository.saveAll(Arrays.asList(categories, articles));
+
         System.out.println("========================================");
         System.out.println("Database initialized with sample data!");
         System.out.println("========================================");

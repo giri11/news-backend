@@ -13,6 +13,11 @@ import java.util.List;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
+    @Query("SELECT a FROM Article a WHERE " +
+            "LOWER(a.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(a.description) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<Article> searchArticles(@Param("search") String search, Pageable pageable);
+
     @Query("""
             select a from Article a 
             left join fetch a.category c 
