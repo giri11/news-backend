@@ -18,40 +18,40 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('roles')")
     public ResponseEntity<List<RoleDto>> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('roles')")
     public ResponseEntity<RoleDto> getRoleById(@PathVariable Long id) {
         return ResponseEntity.ok(roleService.getRoleById(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('roles')")
     public ResponseEntity<RoleDto> createRole(@RequestBody RoleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(roleService.createRole(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('roles')")
     public ResponseEntity<RoleDto> updateRole(@PathVariable Long id,
                                               @RequestBody RoleRequest request) {
         return ResponseEntity.ok(roleService.updateRole(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('roles')")
     public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/available-menus")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('roles')")
     public ResponseEntity<List<MenuDto>> getAvailableMenus() {
         return ResponseEntity.ok(roleService.getAllAvailableMenus());
     }

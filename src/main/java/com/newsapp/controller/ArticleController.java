@@ -19,7 +19,7 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('articles')")
     public ResponseEntity<Page<ArticleDTO>> getAllArticles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -37,27 +37,27 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('articles')")
     public ResponseEntity<ArticleDTO> getArticleById(@PathVariable Long id) {
         return ResponseEntity.ok(articleService.getArticleById(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('articles')")
     public ResponseEntity<ArticleDTO> createArticle(@RequestBody ArticleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(articleService.createArticle(request));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('articles')")
     public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id,
                                                     @RequestBody ArticleRequest request) {
         return ResponseEntity.ok(articleService.updateArticle(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('articles')")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build();

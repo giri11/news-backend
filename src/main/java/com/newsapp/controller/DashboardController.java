@@ -11,7 +11,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DashboardController {
     @GetMapping("/stats")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('dashboard')")
     public ResponseEntity<Map<String, Object>> getStats() {
         return ResponseEntity.ok(Map.of(
                 "totalUsers", 1234,

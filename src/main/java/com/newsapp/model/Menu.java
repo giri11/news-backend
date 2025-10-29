@@ -34,4 +34,7 @@ public class Menu {
     private List<Menu> subMenus = new ArrayList<>();
 
     private Boolean active = true;
+
+    @Column(name = "menu_access")
+    private String menuAccess;
 }
