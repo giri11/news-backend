@@ -111,7 +111,7 @@ public class NewsController {
             )
     })
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Article> detail(
+    public ResponseEntity<ArticleDTO> detail(
             @RequestHeader Map<String, String> headers,
             @PathVariable(name = "id", required = true) Long id){
         log.debug("header "+headers.get("x-api-key"));
@@ -119,41 +119,51 @@ public class NewsController {
         headers.forEach((key, value) -> {
             log.info(String.format("Header '%s' = %s", key, value));
         });
-        String resp = "{\n" +
-                "      \"source\": {\n" +
-                "        \"id\": null,\n" +
-                "        \"name\": \"BaltimoreRavens.com\"\n" +
-                "      },\n" +
-                "      \"author\": null,\n" +
-                "      \"title\": \"Pundits Question Whether Ravens Hit ‘Rock Bottom’ With Loss to Texans | Late for Work - Baltimore Ravens\",\n" +
-                "      \"description\": \"Another struggling offense gets right against the Ravens defense. The Ravens offense faltered without Lamar Jackson. Pundits say the Ravens’ season isn’t lost yet.\",\n" +
-                "      \"url\": \"https://www.baltimoreravens.com/news/ravens-texans-week-5-reaction-rock-bottom-loss-injuries-lamar-jackson-playoff-race\",\n" +
-                "      \"urlToImage\": \"https://static.clubs.nfl.com/image/upload/t_editorial_landscape_12_desktop/ravens/tir9tqakmacdz52bhqti\",\n" +
-                "      \"createdAt\": \"2025-10-06T13:46:24Z\",\n" +
-                "      \"content\": null\n" +
-                "    }\n" ;
-        log.debug("response "+resp);
 
-        Category catSport = new Category();
-        catSport.setId(2L);
-        catSport.setName("Sport");
+        Article article = articleRepository.findByArticleId(id);
+        log.debug("article >> "+article);
+        if (article == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        ArticleDTO dto = new ArticleDTO();
+        BeanUtils.copyProperties(article, dto);
+        dto.setAuthor(article.getCreatedBy().getName());
 
-        User userBarron = new User();
-        userBarron.setId(1L);
-        userBarron.setName("Barron");
+//        String resp = "{\n" +
+//                "      \"source\": {\n" +
+//                "        \"id\": null,\n" +
+//                "        \"name\": \"BaltimoreRavens.com\"\n" +
+//                "      },\n" +
+//                "      \"author\": null,\n" +
+//                "      \"title\": \"Pundits Question Whether Ravens Hit ‘Rock Bottom’ With Loss to Texans | Late for Work - Baltimore Ravens\",\n" +
+//                "      \"description\": \"Another struggling offense gets right against the Ravens defense. The Ravens offense faltered without Lamar Jackson. Pundits say the Ravens’ season isn’t lost yet.\",\n" +
+//                "      \"url\": \"https://www.baltimoreravens.com/news/ravens-texans-week-5-reaction-rock-bottom-loss-injuries-lamar-jackson-playoff-race\",\n" +
+//                "      \"urlToImage\": \"https://static.clubs.nfl.com/image/upload/t_editorial_landscape_12_desktop/ravens/tir9tqakmacdz52bhqti\",\n" +
+//                "      \"createdAt\": \"2025-10-06T13:46:24Z\",\n" +
+//                "      \"content\": null\n" +
+//                "    }\n" ;
+//        log.debug("response "+resp);
+//
+//        Category catSport = new Category();
+//        catSport.setId(2L);
+//        catSport.setName("Sport");
+//
+//        User userBarron = new User();
+//        userBarron.setId(1L);
+//        userBarron.setName("Barron");
+//
+//        Article article = new Article();
+//        article.setId(1L);
+//        article.setCategory(catSport);
+//        article.setTitle("Giri AMD Stock: Why Shares Are Soaring on the OpenAI News Today - Barron's");
+//        article.setCreatedBy(userBarron);
+//        article.setCreatedAt(LocalDateTime.now());
+//        article.setDescription("About AMD Stock: Why Shares Are Soaring on the OpenAI News Today - Barron's");
+//        article.setPathImage("https://pub-5b247ec389ff4be5994c335b26363bc5.r2.dev/1-1757870070188419600");
+//        article.setContent("Why Shares Are Soaring on the OpenAI News Today \n 1Why Shares Are Soaring on the OpenAI News Today" +
+//                "\n 3Why Shares Are Soaring on the OpenAI News Today");
 
-        Article article = new Article();
-        article.setId(1L);
-        article.setCategory(catSport);
-        article.setTitle("Giri AMD Stock: Why Shares Are Soaring on the OpenAI News Today - Barron's");
-        article.setCreatedBy(userBarron);
-        article.setCreatedAt(LocalDateTime.now());
-        article.setDescription("About AMD Stock: Why Shares Are Soaring on the OpenAI News Today - Barron's");
-        article.setPathImage("https://pub-5b247ec389ff4be5994c335b26363bc5.r2.dev/1-1757870070188419600");
-        article.setContent("Why Shares Are Soaring on the OpenAI News Today \n 1Why Shares Are Soaring on the OpenAI News Today" +
-                "\n 3Why Shares Are Soaring on the OpenAI News Today");
-
-        return ResponseEntity.ok(article);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(

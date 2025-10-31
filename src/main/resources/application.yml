@@ -3,6 +3,11 @@ spring:
     name: news-backend
   main:
     allow-circular-references: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/newsdb?createDatabaseIfNotExist=true
@@ -67,3 +72,7 @@ logging:
 news:
   api:
     key: 1e3b2ac4875f4cab9f90ab0ffabec1dc
+
+file:
+  upload-dir: D:\uploads\images
+
