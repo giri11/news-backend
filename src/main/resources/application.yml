@@ -76,3 +76,14 @@ news:
 file:
   upload-dir: D:\uploads\images
 
+cloudflare:
+  r2:
+    account-id: XXXXXXX-XXXXXXXXX-XXXXXXXXXXXXX-XXXX
+    access-key: XXXXXXX-XXXXXXXXX-XXXXXXXXXXXXX-XXXX
+    secret-key: XXXXXXX-XXXXXXXXX-XXXXXXXXXXXXX-XXXX
+    bucket-name: XXXXXXX-XXXXXXXXX-XXXXXXXXXXXXX-XXXX
+    endpoint: XXXXXXX-XXXXXXXXX-XXXXXXXXXXXXX-XXXX
+    public-url: XXXXXXX-XXXXXXXXX-XXXXXXXXXXXXX-XXXX
+
+
+
