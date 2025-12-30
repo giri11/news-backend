@@ -1,6 +1,8 @@
 package com.newsapp.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -24,11 +26,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${cors.allowed.origins}")
+    private String allowedOrigins;
 
     private final ApiKeyAuthenticationFilter apiKeyAuthFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -36,6 +42,8 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/api/auth/**",
+            "/api/public/**",
+            "/actuator/health                                                                                                                                       ",
             "/api-docs/**",
             "/api/files/images/**",
             "/v3/api-docs/**",
@@ -88,7 +96,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:4000", "http://localhost:5173"));
+        log.debug(allowedOrigins);
+        log.debug("array >> "+Arrays.asList(allowedOrigins.split(",")));
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:4000", "http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

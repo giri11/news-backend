@@ -74,7 +74,7 @@ public class NewsController {
     @GetMapping("/top-headlines")
     public ResponseEntity<PagingResponseDTO> topHeadlines(@RequestParam(value = "category", required = false) String category,
                                                                 @RequestParam("pageSize") Integer pageSize){
-        log.debug("param "+category);
+        log.debug("param top "+category);
 
         try{
             Pageable pageable = PageRequest.of(0, pageSize, Sort.by("a.createdAt").descending());
@@ -179,7 +179,7 @@ public class NewsController {
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryDTO>> getCategories() {
 
-        log.debug("masuk sini");
+        log.debug("masuk categories");
         List<CategoryDTO> categories = newsService.getAllActiveCategories();
         return ResponseEntity.ok(categories);
     }

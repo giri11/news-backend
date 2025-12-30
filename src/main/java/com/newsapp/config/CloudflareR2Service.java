@@ -30,8 +30,10 @@ public class CloudflareR2Service {
         if (originalFilename != null && originalFilename.contains(".")) {
             fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
-        String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
-        String key = folder + "/" + uniqueFilename;
+//        String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+//        String key = folder + "/" + uniqueFilename;
+
+        String key = UUID.randomUUID().toString() + fileExtension;
 
         // Determine content type
         String contentType = file.getContentType();

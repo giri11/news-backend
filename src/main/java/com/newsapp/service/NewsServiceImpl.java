@@ -48,7 +48,7 @@ public class NewsServiceImpl implements NewsService {
         return CategoryDTO.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .displayName(category.getDescription())
+                .displayName(category.getName())
                 .slug(category.getName())
                 .orderIndex(category.getId().intValue())
                 .build();

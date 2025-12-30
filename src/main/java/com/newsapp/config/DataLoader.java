@@ -25,24 +25,24 @@ public class DataLoader implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-//        // Create Menus - Parent menus first
-//        Menu dashboard = createMenu("Dashboard", "Home", "/dashboard", 1, null);
-//        Menu users = createMenu("Users", "Users", "/users", 2, null);
-//        Menu roles = createMenu("Roles", "Shield", "/roles", 3, null);
-//        Menu products = createMenu("Products", "Package", "/products", 4, null);
-//        Menu orders = createMenu("Orders", "ShoppingCart", "/orders", 5, null);
-//        Menu reports = createMenu("Reports", "FileText", null, 6, null);
-//        Menu settings = createMenu("Settings", "Settings", null, 7, null);
+        // Create Menus - Parent menus first
+//        Menu dashboard = createMenu("Dashboard", "Home", "/dashboard", 1, null, "dashboard");
+//        Menu users = createMenu("Users", "Users", "/users", 2, null, "users");
+//        Menu roles = createMenu("Roles", "Shield", "/roles", 3, null, "roles");
+//        Menu products = createMenu("Products", "Package", "/products", 4, null, "products");
+//        Menu orders = createMenu("Orders", "ShoppingCart", "/orders", 5, null, "orders");
+//        Menu reports = createMenu("Reports", "FileText", null, 6, null, "reports");
+//        Menu settings = createMenu("Settings", "Settings", null, 7, null, "settings");
 //
 //        // Save parent menus first
 //        menuRepository.saveAll(Arrays.asList(dashboard, users, roles, products, orders, reports, settings));
 //        menuRepository.flush();
 //
 //        // Create submenus and associate with parent
-//        Menu salesReport = createMenu("Sales Report", "BarChart2", "/reports/sales", 1, reports);
-//        Menu inventoryReport = createMenu("Inventory Report", "Package", "/reports/inventory", 2, reports);
-//        Menu profileSettings = createMenu("Profile", "Users", "/settings/profile", 1, settings);
-//        Menu systemSettings = createMenu("System", "Settings", "/settings/system", 2, settings);
+//        Menu salesReport = createMenu("Sales Report", "BarChart2", "/reports/sales", 1, reports, "reports_sales");
+//        Menu inventoryReport = createMenu("Inventory Report", "Package", "/reports/inventory", 2, reports, "reports_inventory");
+//        Menu profileSettings = createMenu("Profile", "Users", "/settings/profile", 1, settings, "settings_profile");
+//        Menu systemSettings = createMenu("System", "Settings", "/settings/system", 2, settings, "settings_system");
 //
 //        // Save submenus
 //        menuRepository.saveAll(Arrays.asList(salesReport, inventoryReport, profileSettings, systemSettings));
@@ -89,9 +89,9 @@ public class DataLoader implements CommandLineRunner {
 //        user.setRoles(new HashSet<>(Arrays.asList(userRole)));
 //
 //        userRepository.saveAll(Arrays.asList(admin, user));
-
-//        Menu categories = createMenu("Categories", "FolderOpen", "/categories", 4, null);
-//        Menu articles = createMenu("Articles", "FileText", "/articles", 5, null);
+//
+//        Menu categories = createMenu("Categories", "FolderOpen", "/categories", 4, null, "categories");
+//        Menu articles = createMenu("Articles", "FileText", "/articles", 5, null, "articles");
 //
 //        menuRepository.saveAll(Arrays.asList(categories, articles));
 
@@ -106,7 +106,7 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("========================================");
     }
 
-    private Menu createMenu(String name, String icon, String path, int order, Menu parent) {
+    private Menu createMenu(String name, String icon, String path, int order, Menu parent, String menuAccess) {
         Menu menu = new Menu();
         menu.setName(name);
         menu.setIcon(icon);
@@ -114,6 +114,7 @@ public class DataLoader implements CommandLineRunner {
         menu.setOrder(order);
         menu.setParent(parent);
         menu.setActive(true);
+        menu.setMenuAccess(menuAccess);
         return menu;
     }
 }
