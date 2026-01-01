@@ -1,26 +1,6 @@
 # version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: admin-backend-db
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Spring Boot Backend
   backend:
     build:
@@ -33,10 +13,10 @@ services:
       - "8080:8080"
     environment:
       # Database configuration
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_URL: ${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      # SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
 
@@ -53,9 +33,9 @@ services:
       JWT_EXPIRATION: 86400000
       API_KEY: ${API_KEY}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
-    depends_on:
-      postgres:
-        condition: service_healthy
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
     networks:
       - backend-network
     restart: unless-stopped
@@ -72,6 +52,6 @@ networks:
 #    external: true
 #    name: admin-network
 
-volumes:
-  postgres_data:
-    driver: local
+#volumes:
+#  postgres_data:
+#    driver: local
