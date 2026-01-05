@@ -74,7 +74,7 @@ news:
     key: ${API_KEY}
 
 file:
-  upload-dir: D:\uploads\images
+  upload-dir: /tmp/uploads
 
 cloudflare:
   r2:
