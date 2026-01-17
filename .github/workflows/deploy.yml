@@ -16,56 +16,98 @@ jobs:
 
       - name: Install Koyeb CLI
         run: |
+          # Download dan install Koyeb CLI
           curl -fsSL https://cli.koyeb.com/install.sh | sh
+          
+          # Verifikasi instalasi
+          ls -la $HOME/.koyeb/bin/ || echo "Koyeb CLI directory not found"
+          
+          # Tambahkan ke PATH untuk step selanjutnya
           echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
 
-      - name: Get Service Info
-        id: service-info
+      - name: Verify CLI Installation
+        run: |
+          # Tunggu sebentar untuk memastikan PATH ter-update
+          export PATH="$HOME/.koyeb/bin:$PATH"
+          
+          # Cek apakah binary ada
+          if [ -f "$HOME/.koyeb/bin/koyeb" ]; then
+            echo "✅ Koyeb CLI found at $HOME/.koyeb/bin/koyeb"
+            $HOME/.koyeb/bin/koyeb version
+          else
+            echo "❌ Koyeb CLI not found"
+            exit 1
+          fi
+
+      - name: List Services
         env:
           KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
         run: |
-          # List semua services untuk debugging
-          echo "Listing all services..."
-          $HOME/.koyeb/bin/koyeb service list
+          export PATH="$HOME/.koyeb/bin:$PATH"
           
-          # Simpan output untuk step selanjutnya
-          echo "Please check the service list above and update the workflow"
+          echo "================================================"
+          echo "📋 Listing all services in your Koyeb account:"
+          echo "================================================"
+          
+          $HOME/.koyeb/bin/koyeb service list || {
+            echo "❌ Failed to list services"
+            echo "Please check your KOYEB_API_TOKEN"
+            exit 1
+          }
+          
+          echo ""
+          echo "================================================"
+          echo "⚠️  IMPORTANT: Check the service list above"
+          echo "================================================"
+          echo "Update the workflow with correct APP_NAME and SERVICE_NAME"
 
       - name: Trigger Redeploy
         env:
           KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
         run: |
-          # GANTI NILAI INI dengan nama app/service Anda yang benar
-          # Format: APP_NAME/SERVICE_NAME
-          # Contoh: my-app/my-service
+          export PATH="$HOME/.koyeb/bin:$PATH"
           
-          APP_NAME=kuad
-          SERVICE_NAME=ku-ad
+          # ⚠️ GANTI NILAI INI dengan nama yang benar dari output di atas
+          APP_NAME="kuad"
+          SERVICE_NAME="ku-ad"
           
-          echo "Triggering redeploy for $APP_NAME/$SERVICE_NAME..."
-          $HOME/.koyeb/bin/koyeb service redeploy $APP_NAME/$SERVICE_NAME
+          echo "================================================"
+          echo "🚀 Triggering redeploy..."
+          echo "================================================"
+          echo "App: $APP_NAME"
+          echo "Service: $SERVICE_NAME"
+          echo ""
           
+          $HOME/.koyeb/bin/koyeb service redeploy $APP_NAME/$SERVICE_NAME || {
+            echo "❌ Redeploy failed"
+            echo "Please verify APP_NAME and SERVICE_NAME are correct"
+            exit 1
+          }
+          
+          echo ""
           echo "✅ Redeploy triggered successfully!"
-          echo "Check deployment status at: https://app.koyeb.com"
+          echo "Check status at: https://app.koyeb.com"
 
-      - name: Deployment Complete
+      - name: Deployment Success
         if: success()
         run: |
+          echo ""
           echo "================================================"
-          echo "✅ Deployment workflow completed successfully!"
+          echo "✅ DEPLOYMENT SUCCESSFUL"
           echo "================================================"
-          echo "Next steps:"
-          echo "1. Go to https://app.koyeb.com"
-          echo "2. Check your service status"
-          echo "3. Wait for the deployment to complete"
+          echo "Your Spring Boot app is being deployed to Koyeb"
+          echo "Monitor progress at: https://app.koyeb.com"
 
       - name: Deployment Failed
         if: failure()
         run: |
+          echo ""
           echo "================================================"
-          echo "❌ Deployment workflow failed!"
+          echo "❌ DEPLOYMENT FAILED"
           echo "================================================"
-          echo "Troubleshooting:"
-          echo "1. Check if KOYEB_API_TOKEN is set correctly in GitHub Secrets"
-          echo "2. Verify APP_NAME and SERVICE_NAME are correct"
-          echo "3. Check the logs above for specific errors"
+          echo "Common issues:"
+          echo "1. Invalid KOYEB_API_TOKEN - check GitHub Secrets"
+          echo "2. Wrong APP_NAME or SERVICE_NAME"
+          echo "3. Service not found in Koyeb"
+          echo ""
+          echo "Please check the logs above for details"
