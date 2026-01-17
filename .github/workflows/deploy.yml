@@ -1,0 +1,53 @@
+name: Deploy to Koyeb
+
+on:
+  push:
+    branches:
+      - main  # Sesuaikan dengan branch Anda
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Koyeb using GitHub Deploy
+        uses: koyeb/action-git-deploy@v1
+        with:
+          api-token: ${{ secrets.KOYEB_API_TOKEN }}
+          app-name: kuad
+          service-name: ku-ad
+          git-branch: main
+
+          # Set environment variables
+          env: |
+            SPRING_DATASOURCE_URL=${{ secrets.POSTGRES_DB }}
+            SPRING_DATASOURCE_USERNAME=${{ secrets.POSTGRES_USER }}
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            SPRING_JPA_HIBERNATE_DDL_AUTO=none
+            SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+            CLOUDFLARE_R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}
+            CLOUDFLARE_R2_ACCESS_KEY=${{ secrets.R2_ACCESS_KEY }}
+            CLOUDFLARE_R2_SECRET_KEY=${{ secrets.R2_SECRET_KEY }}
+            CLOUDFLARE_R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
+            CLOUDFLARE_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+            CLOUDFLARE_R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRATION=86400000
+            API_KEY=${{ secrets.API_KEY }}
+            CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
+
+      - name: Deployment Success
+        if: success()
+        run: |
+          echo "Deployment successful!"
+          echo "Check your app at Koyeb dashboard"
+
+      - name: Deployment Failed
+        if: failure()
+        run: |
+          echo "Deployment failed!"
+          echo "Please check the logs above"
