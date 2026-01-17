@@ -81,4 +81,9 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<String> testing() {
+        return ResponseEntity.ok("testing ok");
+    }
+
 }
