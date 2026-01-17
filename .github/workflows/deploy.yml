@@ -14,40 +14,58 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy to Koyeb using GitHub Deploy
-        uses: koyeb/action-git-deploy@v1
-        with:
-          api-token: ${{ secrets.KOYEB_API_TOKEN }}
-          app-name: kuad
-          service-name: ku-ad
-          git-branch: main
+      - name: Install Koyeb CLI
+        run: |
+          curl -fsSL https://cli.koyeb.com/install.sh | sh
+          echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
 
-          # Set environment variables
-          env: |
-            SPRING_DATASOURCE_URL=${{ secrets.POSTGRES_DB }}
-            SPRING_DATASOURCE_USERNAME=${{ secrets.POSTGRES_USER }}
-            SPRING_DATASOURCE_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            SPRING_JPA_HIBERNATE_DDL_AUTO=none
-            SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-            CLOUDFLARE_R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}
-            CLOUDFLARE_R2_ACCESS_KEY=${{ secrets.R2_ACCESS_KEY }}
-            CLOUDFLARE_R2_SECRET_KEY=${{ secrets.R2_SECRET_KEY }}
-            CLOUDFLARE_R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
-            CLOUDFLARE_R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
-            CLOUDFLARE_R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            JWT_EXPIRATION=86400000
-            API_KEY=${{ secrets.API_KEY }}
-            CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
+      - name: Get Service Info
+        id: service-info
+        env:
+          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
+        run: |
+          # List semua services untuk debugging
+          echo "Listing all services..."
+          $HOME/.koyeb/bin/koyeb service list
+          
+          # Simpan output untuk step selanjutnya
+          echo "Please check the service list above and update the workflow"
 
-      - name: Deployment Success
+      - name: Trigger Redeploy
+        env:
+          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
+        run: |
+          # GANTI NILAI INI dengan nama app/service Anda yang benar
+          # Format: APP_NAME/SERVICE_NAME
+          # Contoh: my-app/my-service
+          
+          APP_NAME=kuad
+          SERVICE_NAME=ku-ad
+          
+          echo "Triggering redeploy for $APP_NAME/$SERVICE_NAME..."
+          $HOME/.koyeb/bin/koyeb service redeploy $APP_NAME/$SERVICE_NAME
+          
+          echo "✅ Redeploy triggered successfully!"
+          echo "Check deployment status at: https://app.koyeb.com"
+
+      - name: Deployment Complete
         if: success()
         run: |
-          echo "Deployment successful!"
-          echo "Check your app at Koyeb dashboard"
+          echo "================================================"
+          echo "✅ Deployment workflow completed successfully!"
+          echo "================================================"
+          echo "Next steps:"
+          echo "1. Go to https://app.koyeb.com"
+          echo "2. Check your service status"
+          echo "3. Wait for the deployment to complete"
 
       - name: Deployment Failed
         if: failure()
         run: |
-          echo "Deployment failed!"
-          echo "Please check the logs above"
+          echo "================================================"
+          echo "❌ Deployment workflow failed!"
+          echo "================================================"
+          echo "Troubleshooting:"
+          echo "1. Check if KOYEB_API_TOKEN is set correctly in GitHub Secrets"
+          echo "2. Verify APP_NAME and SERVICE_NAME are correct"
+          echo "3. Check the logs above for specific errors"
