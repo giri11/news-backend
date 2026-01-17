@@ -3,7 +3,7 @@ name: Deploy to Koyeb
 on:
   push:
     branches:
-      - main  # Sesuaikan dengan branch Anda
+      - main
   workflow_dispatch:
 
 jobs:
@@ -14,100 +14,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Koyeb CLI
+      - name: Trigger Redeploy via Koyeb API
+        env:
+          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
         run: |
-          # Download dan install Koyeb CLI
-          curl -fsSL https://cli.koyeb.com/install.sh | sh
+          echo "================================================"
+          echo "🚀 Deploying to Koyeb..."
+          echo "================================================"
           
-          # Verifikasi instalasi
-          ls -la $HOME/.koyeb/bin/ || echo "Koyeb CLI directory not found"
+          # OPSI 1: Hardcode Service ID (lebih simple)
+          # Ganti SERVICE_ID dengan ID service Anda
+          # SERVICE_ID="your-service-id-here"
           
-          # Tambahkan ke PATH untuk step selanjutnya
-          echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
-
-      - name: Verify CLI Installation
-        run: |
-          # Tunggu sebentar untuk memastikan PATH ter-update
-          export PATH="$HOME/.koyeb/bin:$PATH"
+          # OPSI 2: Dynamic - cari service ID by name
+          echo "Getting service ID for 'ku-ad'..."
+          services=$(curl -s -H "Authorization: Bearer $KOYEB_TOKEN" \
+            https://app.koyeb.com/v1/services)
           
-          # Cek apakah binary ada
-          if [ -f "$HOME/.koyeb/bin/koyeb" ]; then
-            echo "✅ Koyeb CLI found at $HOME/.koyeb/bin/koyeb"
-            $HOME/.koyeb/bin/koyeb version
-          else
-            echo "❌ Koyeb CLI not found"
+          SERVICE_ID=$(echo "$services" | jq -r '.services[] | select(.name == "ku-ad") | .id')
+          
+          if [ -z "$SERVICE_ID" ] || [ "$SERVICE_ID" == "null" ]; then
+            echo "❌ Service 'ku-ad' not found!"
+            echo "Available services:"
+            echo "$services" | jq -r '.services[] | "\(.name) - \(.id)"'
             exit 1
           fi
-
-      - name: List Services
-        env:
-          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
-        run: |
-          export PATH="$HOME/.koyeb/bin:$PATH"
           
-          echo "================================================"
-          echo "📋 Listing all services in your Koyeb account:"
-          echo "================================================"
+          echo "✅ Found service ID: $SERVICE_ID"
+          echo ""
           
-          $HOME/.koyeb/bin/koyeb service list || {
-            echo "❌ Failed to list services"
-            echo "Please check your KOYEB_API_TOKEN"
+          # Trigger redeploy
+          echo "Triggering redeploy..."
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: Bearer $KOYEB_TOKEN" \
+            -H "Content-Type: application/json" \
+            https://app.koyeb.com/v1/services/$SERVICE_ID/redeploy)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+          
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+          
+          if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 201 ]; then
+            echo ""
+            echo "✅ Deployment triggered successfully!"
+            echo "Monitor at: https://app.koyeb.com/apps/kuad/services/ku-ad"
+          else
+            echo ""
+            echo "❌ Deployment failed with status $http_code"
             exit 1
-          }
-          
-          echo ""
-          echo "================================================"
-          echo "⚠️  IMPORTANT: Check the service list above"
-          echo "================================================"
-          echo "Update the workflow with correct APP_NAME and SERVICE_NAME"
-
-      - name: Trigger Redeploy
-        env:
-          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
-        run: |
-          export PATH="$HOME/.koyeb/bin:$PATH"
-          
-          # ⚠️ GANTI NILAI INI dengan nama yang benar dari output di atas
-          APP_NAME="kuad"
-          SERVICE_NAME="ku-ad"
-          
-          echo "================================================"
-          echo "🚀 Triggering redeploy..."
-          echo "================================================"
-          echo "App: $APP_NAME"
-          echo "Service: $SERVICE_NAME"
-          echo ""
-          
-          $HOME/.koyeb/bin/koyeb service redeploy $APP_NAME/$SERVICE_NAME || {
-            echo "❌ Redeploy failed"
-            echo "Please verify APP_NAME and SERVICE_NAME are correct"
-            exit 1
-          }
-          
-          echo ""
-          echo "✅ Redeploy triggered successfully!"
-          echo "Check status at: https://app.koyeb.com"
-
-      - name: Deployment Success
-        if: success()
-        run: |
-          echo ""
-          echo "================================================"
-          echo "✅ DEPLOYMENT SUCCESSFUL"
-          echo "================================================"
-          echo "Your Spring Boot app is being deployed to Koyeb"
-          echo "Monitor progress at: https://app.koyeb.com"
-
-      - name: Deployment Failed
-        if: failure()
-        run: |
-          echo ""
-          echo "================================================"
-          echo "❌ DEPLOYMENT FAILED"
-          echo "================================================"
-          echo "Common issues:"
-          echo "1. Invalid KOYEB_API_TOKEN - check GitHub Secrets"
-          echo "2. Wrong APP_NAME or SERVICE_NAME"
-          echo "3. Service not found in Koyeb"
-          echo ""
-          echo "Please check the logs above for details"
+          fi
